@@ -12,7 +12,7 @@
     <script src="build/react.js"></script>
     <script src="build/react-dom.js"></script>
     <script src="babel/browser.js"></script>
-    <script>
+    <script type="text/babel">
       const Excel = React.createClass({
         getInitialState: function() {
           return {
@@ -24,10 +24,43 @@
         },
         // displayName: 'Excel',
         render: function() {
+          var checks = this.state.data.map(function (d) {
           return (
-            <table><thead><tr>{this.props.headers.map(function(title, idx) { return <th>{title}<th>; })}</tr></thead></table>
-
+              <div>
+                <input type="checkbox" checked={d.selected} onChange={this.__changeSelection.bind(this, d.id)} />
+                  {d.id}
+                  <br />
+              </div>
+            );
+          }.bind(this));
+          return (
+            <form>
+            <input type="checkbox" ref="globalSelector" onChange={this.__changeAllChecks } />CheckAll
+            <br />
+            {checks}
+          </form>
           );
+        },
+        __changeSelection: function (id) {
+        var nextState = this.state.data.map(function (d) {
+          return {
+            id: d.id,
+            selected: (d.id === id ? !d.selected: d.selected)
+          };
+        });
+
+        console.log(nextState);
+        this.setState( {data: nextState });
+        },
+
+        __changeAllChecks: function () {
+        var checks = this.refs.globalSelector.getDOMNode().checked;
+        var nextState = this.state.data.map(function (d) {
+          return {id: d.id, selected: chekcs };
+        });
+
+        console.log('change all checks -> ', nextState)
+        this.setState( { data: nextState })
         }
       });
 
