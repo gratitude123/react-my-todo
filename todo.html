@@ -17,8 +17,9 @@
         getInitialState: function() {
           return {
             data: [
-              {id: 1, selected: false},
-              {id: 2, selected: false}
+              {id: "S001", sagyoNaiyo: "チケットを予約する", selected: false},
+              {id: "S002", sagyoNaiyo: "掃除をする", selected: false},
+              {id: "S003", sagyoNaiyo: "アプリを開発する", selected: false}
             ]
           };
         },
@@ -28,15 +29,13 @@
           return (
               <div>
                 <input type="checkbox" checked={d.selected} onChange={this.__changeSelection.bind(this, d.id)} />
-                  {d.id}
+                  {d.sagyoNaiyo}
                   <br />
               </div>
             );
           }.bind(this));
           return (
             <form>
-            <input type="checkbox" ref="globalSelector" onChange={this.__changeAllChecks } />CheckAll
-            <br />
             {checks}
           </form>
           );
@@ -45,6 +44,7 @@
         var nextState = this.state.data.map(function (d) {
           return {
             id: d.id,
+            sagyoNaiyo: d.sagyoNaiyo,
             selected: (d.id === id ? !d.selected: d.selected)
           };
         });
