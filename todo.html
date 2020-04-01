@@ -4,6 +4,7 @@
     <title>Table</title>
     <meta charset="utf-8">
     <!--link rel="stylesheet" type="text/css" href="03.00.table.css"-->
+    <link rel="stylesheet" href="main.css">
   </head>
   <body>
     <div id="app">
@@ -27,17 +28,24 @@
         render: function() {
           var checks = this.state.data.map(function (d) {
           return (
-              <div>
+              <section>
                 <input type="checkbox" checked={d.selected} onChange={this.__changeSelection.bind(this, d.id)} />
                   {d.sagyoNaiyo}
                   <br />
-              </div>
+              </section>
             );
           }.bind(this));
           return (
-            <form>
-            {checks}
-          </form>
+            <div>
+              <section className="today">
+                <h3>本日の作業</h3>
+                <section>
+                  <form>
+                    {checks}
+                  </form>
+                </section>
+              </section>
+            </div>
           );
         },
         __changeSelection: function (id) {
