@@ -16,22 +16,26 @@
     <script type="text/babel">
       const Excel = React.createClass({
         getInitialState: function() {
+          const stateData = [
+            {id: "S001", sagyoNaiyo: "チケットを予約する", selected: false},
+            {id: "S002", sagyoNaiyo: "掃除をする", selected: false},
+            {id: "S003", sagyoNaiyo: "アプリを開発する", selected: false}
+          ];
           return {
-            data: [
-              {id: "S001", sagyoNaiyo: "チケットを予約する", selected: false},
-              {id: "S002", sagyoNaiyo: "掃除をする", selected: false},
-              {id: "S003", sagyoNaiyo: "アプリを開発する", selected: false}
-            ]
+            data: stateData,
+            alternative: stateData,
+            todoCount: stateData.length,
+            radio: "all"
           };
         },
         // displayName: 'Excel',
         render: function() {
-          var checks = this.state.data.map(function(d) {
+          var checks = this.state.alternative.map(function(d) {
           return (
             <section>
               <input type="checkbox" id={d.id} checked={d.selected} onChange={this.__changeSelection.bind(this, d.id)} />
-              <label className="label" htmlFor={d.id}>{d.sagyoNaiyo}</label>
-              <button className="destroy" onClick={this.__destroyRow(d.id)}>×</button>
+              <label className="checklabel" htmlFor={d.id}>{d.sagyoNaiyo}</label>
+              <button className="destroy" onClick={() => {this.__destroyRow(d.id)}}>×</button>
               <br />
             </section>
             );
@@ -43,6 +47,17 @@
                   <input type="text" onKeyPress={this.__pressEnter} />
                 <section>
                   {checks}
+                  <br />
+                  {this.state.todoCount}
+                  {" items Left"}
+                  {"  "}
+                  <input type="radio" id="radioAll" checked={this.state.radio==="all"} onChange={() => {this.__selectCheckedRow("all")}} />
+                  <label className="radiolabel" htmlFor="radioAll">All</label>
+                  <input type="radio" id="radioActive" checked={this.state.radio==="active"} onChange={() => {this.__selectCheckedRow("active")}} />
+                  <label className="radiolabel" htmlFor="radioActive">Active</label>
+                  <input type="radio" id="radioCompleted" checked={this.state.radio==="completed"} onChange={() => {this.__selectCheckedRow("completed")}} />
+                  <label className="radiolabel" htmlFor="radioCompleted">Completed</label>
+                  
                 </section>
               </section>
             </div>
@@ -50,20 +65,26 @@
         },
 
         __changeSelection: function(id) {
+          let todoCount = 0;
           let nextState = this.state.data.map(function(d) {
+            if (d.id === id) {
+              if(d.selected) {
+                todoCount++;
+              }
+            }
+            else if (d.selected === false) {
+              todoCount++;
+            }
             return {
               id: d.id,
               sagyoNaiyo: d.sagyoNaiyo,
               selected: (d.id === id ? !d.selected: d.selected)
             };
           });
-
-          console.log(nextState);
-          this.setState({data: nextState});
+          this.setState({data: nextState, alternative: nextState, todoCount: todoCount});
         },
 
         __pressEnter: function(e) {
-          console.log(e.target.value);
           if (e.charCode === 13) {
             let nextState = this.state.data;
             const lastID = (nextState[(nextState.length) - 1]).id;
@@ -81,14 +102,38 @@
               selected: false 
             };
             nextState.push(additionalState);
-            console.log(nextState);     
-            this.setState({data: nextState});
+            let todoCount = this.state.todoCount;
+            todoCount++;
+            this.setState({data: nextState, alternative: nextState, todoCount: todoCount});
           }
         },
 
         __destroyRow: function(id) {
-          console.log("test", id);
+          const needlessId = id;
+          let nextState =this.state.data.filter(d => d.id !== needlessId);
+          let todoCount = this.state.todoCount;
+          todoCount--;
+          this.setState({data: nextState, alternative: nextState, todoCount: todoCount});
+        },
+
+        __selectCheckedRow: function(status) {
+          let currentState = this.state.data;
+          let nextState = currentState;
+          switch (status) {
+            case "all":
+              break;
+            case "active":
+              nextState = currentState.filter(d => !d.selected);
+              break;
+            case "completed":
+              nextState = currentState.filter(d => d.selected);
+              break;
+            default:
+              console.log("default");
+          }
+          this.setState({alternative: nextState, radio: status});
         }
+
       });
 
       const dt = new Date();

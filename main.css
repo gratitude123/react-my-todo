@@ -11,11 +11,11 @@ button {
 input[type=checkbox] {
   display: none; /* checkboxの標準のスタイルを無効化する */
 }
-input[type=checkbox]:checked + .label {
+input[type=checkbox]:checked + .checklabel {
   color: gray; /* マウス選択時のフォント色を設定する */
   text-decoration: line-through; /* マウス選択時の取り消し線を設定する */
 }
-.label:hover + .destroy {
+.checklabel:hover + .destroy {
   font-size: 1.1em;
   color: lightsalmon;
   text-indent: 0%;
@@ -40,17 +40,17 @@ input[type=checkbox]:checked + .label {
   white-space: nowrap;
   overflow: hidden;
 }
-.label:after, .label:before{
+.checklabel:after, .checklabel:before{
   position: absolute; /* ボックスの位置を指定する */
   content: ""; /* ボックスのコンテンツ */
   display: block; /* ブロックレベル要素化する */
   top: 50%; /* 上部から配置の基準位置を決める */
 }
-.label {
+.checklabel {
   position: relative; /* ボックスの位置を設定する */
   padding: 0 0 15px 42px; /* ボックス内側の余白を設定する */
-  }
-.label:after {
+}
+.checklabel:after {
   position: absolute; /* ボックスの位置を設定する */
   content: ""; /* ボックスのコンテンツ */
   display: block; /* ブロックレベル要素化する */
@@ -63,7 +63,7 @@ input[type=checkbox]:checked + .label {
   border-width: 0.08em;
   border-radius: 50%; /* ボックスの角丸を設定する */
 }
-.label:before {
+.checklabel:before {
   left: 23px; /* 左から配置の基準位置を決める */
   margin-top: -6px; /* チェックマークの位置 */
   width: 3px; /* ボックスの横幅を指定する */
@@ -74,6 +74,18 @@ input[type=checkbox]:checked + .label {
   opacity: 0; /* 要素を透過指定する */
   border-width: 0.1em;
   }
-input[type=checkbox]:checked + .label:before {
+input[type=checkbox]:checked + .checklabel:before {
   opacity: 1; /* 要素を表示する */
+}
+input[type=radio] {
+  display: none; /* radioの標準のスタイルを無効化する */
+}
+input[type="radio"]:checked + label {
+  border: 1px solid #FADBDA;/* ラベルの境界線を実線で指定する */
+}
+.radiolabel {
+  margin: 5px; /* ラベル外側の余白を指定する */
+  border: none;/* ラベルの境界線を実線で指定する */
+  border-radius: 10%; /* ボックスの角丸を設定する */
+  padding: 7px 9px 7px 7px; /* ボックス内側の余白を設定する */
 }
