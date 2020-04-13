@@ -28,6 +28,13 @@
             radio: "all"
           };
         },
+        componentDidMount: function() {
+          window.setInterval(() => {
+            let allWorks = this.state.data;
+            const uncheckedWorks = allWorks.filter(d => !d.selected);  
+            notifyMe(uncheckedWorks);
+          }, 10000);
+        },
         // displayName: 'Excel',
         render: function() {
           var checks = this.state.alternative.map(function(d) {
@@ -42,22 +49,22 @@
           }.bind(this));
           return (
             <div>
-              <section className="today">
+              <section>
                 <h3>todos</h3>
+                <section className="boxshadow">
                   <input type="text" onKeyPress={this.__pressEnter} />
-                <section>
-                  {checks}
-                  <br />
-                  {this.state.todoCount}
-                  {" items Left"}
-                  {"  "}
-                  <input type="radio" id="radioAll" checked={this.state.radio==="all"} onChange={() => {this.__selectCheckedRow("all")}} />
-                  <label className="radiolabel" htmlFor="radioAll">All</label>
-                  <input type="radio" id="radioActive" checked={this.state.radio==="active"} onChange={() => {this.__selectCheckedRow("active")}} />
-                  <label className="radiolabel" htmlFor="radioActive">Active</label>
-                  <input type="radio" id="radioCompleted" checked={this.state.radio==="completed"} onChange={() => {this.__selectCheckedRow("completed")}} />
-                  <label className="radiolabel" htmlFor="radioCompleted">Completed</label>
-                  
+                  <section>
+                    {checks}
+                    <br />
+                    {this.state.todoCount}
+                    {" items Left  "}
+                    <input type="radio" id="radioAll" checked={this.state.radio==="all"} onChange={() => {this.__selectCheckedRow("all")}} />
+                    <label className="radiolabel" htmlFor="radioAll">All</label>
+                    <input type="radio" id="radioActive" checked={this.state.radio==="active"} onChange={() => {this.__selectCheckedRow("active")}} />
+                    <label className="radiolabel" htmlFor="radioActive">Active</label>
+                    <input type="radio" id="radioCompleted" checked={this.state.radio==="completed"} onChange={() => {this.__selectCheckedRow("completed")}} />
+                    <label className="radiolabel" htmlFor="radioCompleted">Completed</label>
+                  </section>
                 </section>
               </section>
             </div>
@@ -165,6 +172,40 @@
         }),
         document.getElementById("app")
       );
+
+      function notifyMe(data) {
+        if (!("Notification" in window)) { // in演算子は指定されたオブジェクトに指定されたプロパティがある場合、trueを返す
+        alert("このブラウザは通知をサポートしていません");
+        }
+        else if (Notification.permission === "granted") { // 既に通知の許可を得ているか確認する
+          let notification = new Notification("未完了の作業があります"); // 許可を得ている場合は通知を作成する
+        }
+        else if (Notification.permission !== "denied") {
+          Notification.requestPermission(function (permission) { // ユーザーに通知の許可を求める
+            if (permission === "granted") {
+              let notification = new Notification("未完了の作業があります"); // ユーザーが許可した場合は通知を作成する
+            }
+          });
+        }
+        let works = "";
+        for (var i = 0; i < data.length; i++) {
+          if (i === 0) {
+            works = data[i].sagyoNaiyo;
+            continue;
+          }
+          works = works + "," + data[i].sagyoNaiyo;
+        }
+        spawnNotification(works, "em.png", "本日の作業");
+      }
+
+      function spawnNotification(theBody,theIcon,theTitle) {
+        var options = {
+          body: theBody,
+          icon: theIcon
+        }
+        var n = new Notification(theTitle,options);
+        setTimeout(n.close.bind(n), 5000); 
+      }
     </script>
   </body>
 </html>

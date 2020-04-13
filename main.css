@@ -89,3 +89,8 @@ input[type="radio"]:checked + label {
   border-radius: 10%; /* ボックスの角丸を設定する */
   padding: 7px 9px 7px 7px; /* ボックス内側の余白を設定する */
 }
+.boxshadow {
+  width: 350px;
+  padding: 0px 0px 10px 0px;
+  box-shadow: -1px 1px 50px -20px;
+}
