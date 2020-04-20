@@ -16,16 +16,12 @@
     <script type="text/babel">
       const Excel = React.createClass({
         getInitialState: function() {
-          const stateData = [
-            {id: "S001", sagyoNaiyo: "チケットを予約する", selected: false},
-            {id: "S002", sagyoNaiyo: "掃除をする", selected: false},
-            {id: "S003", sagyoNaiyo: "アプリを開発する", selected: false}
-          ];
           return {
-            data: stateData,
-            alternative: stateData,
-            todoCount: stateData.length,
-            radio: "all"
+            data: initialData,
+            alternative: initialData,
+            uncheckedCount: initialData.length,
+            radio: "all",
+            lastID: ""
           };
         },
         componentDidMount: function() {
@@ -33,7 +29,7 @@
             let allWorks = this.state.data;
             const uncheckedWorks = allWorks.filter(d => !d.selected);  
             notifyMe(uncheckedWorks);
-          }, 10000);
+          }, 600000);
         },
         // displayName: 'Excel',
         render: function() {
@@ -41,8 +37,8 @@
           return (
             <section>
               <input type="checkbox" id={d.id} checked={d.selected} onChange={this.__changeSelection.bind(this, d.id)} />
-              <label className="checklabel" htmlFor={d.id}>{d.sagyoNaiyo}</label>
-              <button className="destroy" onClick={() => {this.__destroyRow(d.id)}}>×</button>
+              <label className="checkLabel" htmlFor={d.id}>{d.workDescription}</label>
+              <button className="destroyRow" onClick={() => {this.__destroyRow(d.id)}}>×</button>
               <br />
             </section>
             );
@@ -51,19 +47,24 @@
             <div>
               <section>
                 <h3>todos</h3>
-                <section className="boxshadow">
-                  <input type="text" onKeyPress={this.__pressEnter} />
+                <section className="boxShadow">
+                  <section className="textAndButton">
+                    <button className="checkAllButton" onClick={this.__checkAll}>∨</button>
+                    <input type="text" className="inputText" onKeyPress={this.__addRow} />
+                  </section>
                   <section>
                     {checks}
-                    <br />
-                    {this.state.todoCount}
-                    {" items Left  "}
-                    <input type="radio" id="radioAll" checked={this.state.radio==="all"} onChange={() => {this.__selectCheckedRow("all")}} />
-                    <label className="radiolabel" htmlFor="radioAll">All</label>
-                    <input type="radio" id="radioActive" checked={this.state.radio==="active"} onChange={() => {this.__selectCheckedRow("active")}} />
-                    <label className="radiolabel" htmlFor="radioActive">Active</label>
-                    <input type="radio" id="radioCompleted" checked={this.state.radio==="completed"} onChange={() => {this.__selectCheckedRow("completed")}} />
-                    <label className="radiolabel" htmlFor="radioCompleted">Completed</label>
+                    <section className="checkInfo">
+                      <td>{this.state.uncheckedCount + " items left"}
+                        <input type="radio" id="radioAll" checked={this.state.radio==="all"} onChange={() => {this.__selectCheckedRow("all")}} />
+                        <label className="radioLabel" htmlFor="radioAll">All</label>
+                        <input type="radio" id="radioActive" checked={this.state.radio==="active"} onChange={() => {this.__selectCheckedRow("active")}} />
+                        <label className="radioLabel" htmlFor="radioActive">Active</label>
+                        <input type="radio" id="radioCompleted" checked={this.state.radio==="completed"} onChange={() => {this.__selectCheckedRow("completed")}} />
+                        <label className="radioLabel" htmlFor="radioCompleted">Completed</label>
+                        <button className="destroyRows" onClick={this.__destroyCheckedRow}>Clear completed</button>
+                      </td>
+                    </section>
                   </section>
                 </section>
               </section>
@@ -72,29 +73,35 @@
         },
 
         __changeSelection: function(id) {
-          let todoCount = 0;
-          let nextState = this.state.data.map(function(d) {
+          let uncheckedCount = 0;
+          let nextRows = this.state.data.map(function(d) {
             if (d.id === id) {
               if(d.selected) {
-                todoCount++;
+                uncheckedCount++;
               }
             }
             else if (d.selected === false) {
-              todoCount++;
+              uncheckedCount++;
             }
             return {
               id: d.id,
-              sagyoNaiyo: d.sagyoNaiyo,
+              workDescription: d.workDescription,
               selected: (d.id === id ? !d.selected: d.selected)
             };
           });
-          this.setState({data: nextState, alternative: nextState, todoCount: todoCount});
+          this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
         },
 
-        __pressEnter: function(e) {
+        __addRow: function(e) {
           if (e.charCode === 13) {
-            let nextState = this.state.data;
-            const lastID = (nextState[(nextState.length) - 1]).id;
+            let lastID;
+            let nextRows = this.state.data;
+            if (this.state.data.length !== 0) {
+              lastID = (nextRows[(nextRows.length) - 1]).id;
+            }
+            else {
+              lastID = this.state.lastID;
+            }
             const nextNumber = Number(lastID.slice(1)) + 1;
             let nextID = "S";
             if (nextNumber < 10) {
@@ -103,97 +110,99 @@
             else if (nextNumber < 100) {
               nextID = nextID + "0" + nextNumber;
             }
-            const additionalState = {
+            const additionalRows = {
               id: nextID,
-              sagyoNaiyo: e.target.value,
+              workDescription: e.target.value,
               selected: false 
             };
-            nextState.push(additionalState);
-            let todoCount = this.state.todoCount;
-            todoCount++;
-            this.setState({data: nextState, alternative: nextState, todoCount: todoCount});
+            nextRows.push(additionalRows);
+            let uncheckedCount = this.state.uncheckedCount;
+            uncheckedCount++;
+            this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount, lastID: nextID});
           }
+        },
+
+        __checkAll: function() {
+          let nextRows = this.state.data.map(function(d) {
+            return {
+              id: d.id,
+              workDescription: d.workDescription,
+              selected: true
+            };
+          });
+          this.setState({data: nextRows, alternative: nextRows,  uncheckedCount: 0});
         },
 
         __destroyRow: function(id) {
           const needlessId = id;
-          let nextState =this.state.data.filter(d => d.id !== needlessId);
-          let todoCount = this.state.todoCount;
-          todoCount--;
-          this.setState({data: nextState, alternative: nextState, todoCount: todoCount});
+          const lastID = (this.state.data[(this.state.data.length) - 1]).id;
+          const nextRows =this.state.data.filter(d => d.id !== needlessId);
+          let uncheckedCount = this.state.uncheckedCount;
+          uncheckedCount--;
+          this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount, lastID: lastID});
+        },
+
+        __destroyCheckedRow: function() {
+          const lastID = (this.state.data[(this.state.data.length) - 1]).id;
+          const nextRows = this.state.data.filter(d => !d.selected);
+          const uncheckedCount = nextRows.length;
+          this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount, lastID: lastID});
         },
 
         __selectCheckedRow: function(status) {
-          let currentState = this.state.data;
-          let nextState = currentState;
+          let currentRows = this.state.data;
+          let nextRows = currentRows;
           switch (status) {
             case "all":
               break;
             case "active":
-              nextState = currentState.filter(d => !d.selected);
+              nextRows = currentRows.filter(d => !d.selected);
               break;
             case "completed":
-              nextState = currentState.filter(d => d.selected);
+              nextRows = currentRows.filter(d => d.selected);
               break;
             default:
               console.log("default");
           }
-          this.setState({alternative: nextState, radio: status});
+          this.setState({alternative: nextRows, radio: status});
         }
 
       });
-
-      const dt = new Date();
-      const year = dt.getFullYear() + "";
-      const month = dt.getMonth()+1 + "";
-      const date = dt.getDate() + "";
-      const youbis = ["日","月","火","水","木","金","土"];
-      const youbi = youbis[dt.getDay()];
-      const yyyymmddyoubi = year + "年" + month + "月" + date + "日" + "(" + youbi + ")";
       
-      const headers = [
-        yyyymmddyoubi
-      ];
-      
-      const data = [
-        ["The Lord of the Rings", "J. R. R. Tolkien", "English", "1954–1955", "150 million"], 
-        ["Le Petit Prince (The Little Prince)", "Antoine de Saint-Exupéry", "French", "1943", "140 million"], 
-        ["Harry Potter and the Philosopher's Stone", "J. K. Rowling", "English", "1997", "107 million"], 
-        ["And Then There Were None", "Agatha Christie", "English", "1939", "100 million"], 
-        ["Dream of the Red Chamber", "Cao Xueqin", "Chinese", "1754–1791", "100 million"], 
-        ["The Hobbit", "J. R. R. Tolkien", "English", "1937", "100 million"], 
-        ["She: A History of Adventure", "H. Rider Haggard", "English", "1887", "100 million"],
-      ];
+      const initialData = [
+            {id: "S001", workDescription: "チケットを予約する", selected: false},
+            {id: "S002", workDescription: "掃除をする", selected: false},
+            {id: "S003", workDescription: "アプリを開発する", selected: false}
+          ];
       
       ReactDOM.render(
         React.createElement(Excel, {
-          headers: headers,
-          initialData: data,
+          initialData: initialData,
         }),
         document.getElementById("app")
       );
 
       function notifyMe(data) {
-        if (!("Notification" in window)) { // in演算子は指定されたオブジェクトに指定されたプロパティがある場合、trueを返す
+        if (!("Notification" in window)) {
         alert("このブラウザは通知をサポートしていません");
         }
-        else if (Notification.permission === "granted") { // 既に通知の許可を得ているか確認する
-          let notification = new Notification("未完了の作業があります"); // 許可を得ている場合は通知を作成する
+        else if (Notification.permission === "granted") {
+          let notification = new Notification("未完了の作業があります");
         }
         else if (Notification.permission !== "denied") {
-          Notification.requestPermission(function (permission) { // ユーザーに通知の許可を求める
+          Notification.requestPermission(function (permission) {
             if (permission === "granted") {
-              let notification = new Notification("未完了の作業があります"); // ユーザーが許可した場合は通知を作成する
+              let notification = new Notification("未完了の作業があります");
             }
           });
         }
         let works = "";
         for (var i = 0; i < data.length; i++) {
           if (i === 0) {
-            works = data[i].sagyoNaiyo;
+            works = data[i].workDescription;
             continue;
           }
-          works = works + "," + data[i].sagyoNaiyo;
+          works = works + "," + data[i].workDescription;
         }
         spawnNotification(works, "em.png", "本日の作業");
       }
