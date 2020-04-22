@@ -1,21 +1,15 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Table</title>
-    <meta charset="utf-8">
-    <!--link rel="stylesheet" type="text/css" href="03.00.table.css"-->
-    <link rel="stylesheet" href="main.css">
-  </head>
-  <body>
-    <div id="app">
-      <!-- my app renders here -->
-    </div>
-    <script src="build/react.js"></script>
-    <script src="build/react-dom.js"></script>
-    <script src="babel/browser.js"></script>
-    <script type="text/babel">
-      const Excel = React.createClass({
-        getInitialState: function() {
+
+      import React from "react";
+      import ReactDOM from "react-dom";
+      import store from "./TodoStore";
+      
+      export default class TodoList extends React.Component {
+        getInitialState() {
+          const initialData = [
+            {id: "S001", workDescription: "チケットを予約する", selected: false},
+            {id: "S002", workDescription: "掃除をする", selected: false},
+            {id: "S003", workDescription: "アプリを開発する", selected: false}
+          ];
           return {
             data: initialData,
             alternative: initialData,
@@ -23,16 +17,16 @@
             radio: "all",
             lastID: ""
           };
-        },
-        componentDidMount: function() {
+        };
+        componentDidMount() {
           window.setInterval(() => {
             let allWorks = this.state.data;
             const uncheckedWorks = allWorks.filter(d => !d.selected);  
             notifyMe(uncheckedWorks);
           }, 600000);
-        },
+        };
         // displayName: 'Excel',
-        render: function() {
+        render() {
           var checks = this.state.alternative.map(function(d) {
           return (
             <section>
@@ -70,9 +64,9 @@
               </section>
             </div>
           );
-        },
+        };
 
-        __changeSelection: function(id) {
+        __changeSelection(id) {
           let uncheckedCount = 0;
           let nextRows = this.state.data.map(function(d) {
             if (d.id === id) {
@@ -90,9 +84,9 @@
             };
           });
           this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
-        },
+        };
 
-        __addRow: function(e) {
+        __addRow(e) {
           if (e.charCode === 13) {
             const nextRows = this.state.data;
             const extID = test();
@@ -108,9 +102,9 @@
             uncheckedCount++;
             this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
           }
-        },
+        };
 
-        __checkAll: function() {
+        __checkAll() {
           let nextRows = this.state.data.map(function(d) {
             return {
               id: d.id,
@@ -119,23 +113,23 @@
             };
           });
           this.setState({data: nextRows, alternative: nextRows,  uncheckedCount: 0});
-        },
+        };
 
-        __destroyRow: function(id) {
+        __destroyRow(id) {
           const needlessId = id;
           const nextRows =this.state.data.filter(d => d.id !== needlessId);
           let uncheckedCount = this.state.uncheckedCount;
           uncheckedCount--;
           this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
-        },
+        };
 
-        __destroyCheckedRow: function() {
+        __destroyCheckedRow() {
           const nextRows = this.state.data.filter(d => !d.selected);
           const uncheckedCount = nextRows.length;
           this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
-        },
+        };
 
-        __selectCheckedRow: function(status) {
+        __selectCheckedRow(status) {
           let currentRows = this.state.data;
           let nextRows = currentRows;
           switch (status) {
@@ -151,9 +145,9 @@
               console.log("default");
           }
           this.setState({alternative: nextRows, radio: status});
-        }
+        };
 
-      });
+      }
 
       
       
@@ -180,12 +174,12 @@
         };
       }();
       
-      ReactDOM.render(
-        React.createElement(Excel, {
-          initialData: initialData,
-        }),
-        document.getElementById("app")
-      );
+      //ReactDOM.render(
+        //React.createElement(Excel, {
+          //initialData: initialData,
+        //}),
+        //document.getElementById("app")
+      //);
 
       function notifyMe(data) {
         if (!("Notification" in window)) {
@@ -220,7 +214,3 @@
         var n = new Notification(theTitle,options);
         setTimeout(n.close.bind(n), 5000); 
       }
-    </script>
-  </body>
-</html>
-
