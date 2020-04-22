@@ -94,15 +94,8 @@
 
         __addRow: function(e) {
           if (e.charCode === 13) {
-            let lastID;
-            let nextRows = this.state.data;
-            if (this.state.data.length !== 0) {
-              lastID = (nextRows[(nextRows.length) - 1]).id;
-            }
-            else {
-              lastID = this.state.lastID;
-            }
-            const nextNumber = Number(lastID.slice(1)) + 1;
+            const nextRows = this.state.data;
+            const nextNumber = issueLatestID();
             let nextID = "S";
             if (nextNumber < 10) {
               nextID = nextID + "00" + nextNumber;
@@ -118,7 +111,7 @@
             nextRows.push(additionalRows);
             let uncheckedCount = this.state.uncheckedCount;
             uncheckedCount++;
-            this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount, lastID: nextID});
+            this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
           }
         },
 
@@ -135,18 +128,16 @@
 
         __destroyRow: function(id) {
           const needlessId = id;
-          const lastID = (this.state.data[(this.state.data.length) - 1]).id;
           const nextRows =this.state.data.filter(d => d.id !== needlessId);
           let uncheckedCount = this.state.uncheckedCount;
           uncheckedCount--;
-          this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount, lastID: lastID});
+          this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
         },
 
         __destroyCheckedRow: function() {
-          const lastID = (this.state.data[(this.state.data.length) - 1]).id;
           const nextRows = this.state.data.filter(d => !d.selected);
           const uncheckedCount = nextRows.length;
-          this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount, lastID: lastID});
+          this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
         },
 
         __selectCheckedRow: function(status) {
@@ -168,12 +159,23 @@
         }
 
       });
+
+      
       
       const initialData = [
             {id: "S001", workDescription: "チケットを予約する", selected: false},
             {id: "S002", workDescription: "掃除をする", selected: false},
             {id: "S003", workDescription: "アプリを開発する", selected: false}
           ];
+
+      let issueLatestID = function() {
+        let lastID = (initialData[(initialData.length) - 1]).id;
+        let nextNumber = Number(lastID.slice(1));
+        return function() {
+          nextNumber++;
+          return nextNumber;
+        };
+      }();
       
       ReactDOM.render(
         React.createElement(Excel, {
