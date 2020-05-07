@@ -1,0 +1,140 @@
+
+.textAndButton {
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-width: 0 0 1px 0;
+  width: 100%;
+}
+button {
+  border-style: none;
+  background-color: transparent;
+}
+.checkAllButton {
+  font-weight: bold;
+  font-size: 150%;
+  font-family: sans-serif;
+  margin: 0 0 0 10px;
+}
+.checkAllButton:focus {
+  outline: none;
+}
+.inputText {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  background-image: none;
+  border-width: 0;
+  padding: 7px 0px 0px 0px;
+  font-size: 100%;
+  width: 85%;
+  margin: 0px 0px 0px 5px;
+}
+.inputText:focus {
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  box-shadow: none;
+  outline: none;
+  border-width: 0;
+  width: 85%;
+  margin: 0px 0px 0px 5px;
+}
+
+/* チェックボックスとラジオボタンのカスタマイズに関して、下記のページを参考に作成 */
+/* https://proengineer.internous.co.jp/content/columnfeature/6493 */
+/* https://proengineer.internous.co.jp/content/columnfeature/6492 */
+
+input[type=checkbox] {
+  display: none; /* checkboxの標準のスタイルを無効化する */
+}
+input[type=checkbox]:checked + .checkLabel {
+  color: gray; /* マウス選択時のフォント色を設定する */
+  text-decoration: line-through; /* マウス選択時の取り消し線を設定する */
+}
+.checkLabel:hover + .destroyRow {
+  font-size: 1.1em;
+  color: lightsalmon;
+  text-indent: 0%;
+  white-space: none;
+  overflow: none;
+}
+.destroyRow:hover {
+  font-size: 1.1em;
+  color: lightsalmon;
+  text-indent: 0%;
+  white-space: none;
+  overflow: none;
+}
+.destroyRow {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  appearance: none;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.checkLabel:after, .checkLabel:before{
+  position: absolute; /* ボックスの位置を指定する */
+  content: ""; /* ボックスのコンテンツ */
+  display: block; /* ブロックレベル要素化する */
+  top: 50%; /* 上部から配置の基準位置を決める */
+}
+.checkLabel {
+  position: relative; /* ボックスの位置を設定する */
+  padding: 0px 0px 3px 42px; /* ボックス内側の余白を設定する */
+}
+.checkLabel:after {
+  position: absolute; /* ボックスの位置を設定する */
+  content: ""; /* ボックスのコンテンツ */
+  display: block; /* ブロックレベル要素化する */
+  top: 35%; /* 上部から配置の基準位置を決める */
+  left: 15px; /* 左から配置の基準位置を決める */
+  margin-top: -7px; /* チェック枠の位置 */
+  width: 0.9em; /* ボックスの横幅を設定する */
+  height: 0.9em; /* ボックスの高さを設定する */
+  border: 1em solid #aaaaaa; /* ボックスの境界線を実線で設定する */
+  border-width: 0.08em;
+  border-radius: 50%; /* ボックスの角丸を設定する */
+}
+.checkLabel:before {
+  left: 21px; /* 左から配置の基準位置を決める */
+  margin-top: -7px; /* チェックマークの位置 */
+  width: 3px; /* ボックスの横幅を指定する */
+  height: 8px; /* ボックスの高さを指定する */
+  border-right: 3px solid lightgreen; /* 境界線（右）のスタイルを指定する */
+  border-bottom: 3px solid lightgreen; /* 境界線（下）のスタイルを指定する */
+  transform: rotate(35deg); /* 要素を回転させる */
+  opacity: 0; /* 要素を透過指定する */
+  border-width: 0.1em;
+  }
+input[type=checkbox]:checked + .checkLabel:before {
+  opacity: 1; /* 要素を表示する */
+}
+input[type=radio] {
+  display: none; /* radioの標準のスタイルを無効化する */
+}
+input[type="radio"]:checked + label {
+  border: 1px solid #FADBDA;/* ラベルの境界線を実線で指定する */
+}
+.radioLabel {
+  margin: 5px; /* ラベル外側の余白を指定する */
+  border: none;/* ラベルの境界線を実線で指定する */
+  border-radius: 10%; /* ボックスの角丸を設定する */
+  padding: 7px 9px 7px 7px; /* ボックス内側の余白を設定する */
+}
+.destroyRows {
+  font-size: 14px;
+}
+.destroyRows:focus {
+  outline: none;
+}
+.boxShadow {
+  width: 430px;
+  box-shadow: -1px 1px 50px -20px;
+}
+.checkInfo {
+  font-size: 0.8em;
+  border-spacing: 1.2em;
+  display: inline;
+}
