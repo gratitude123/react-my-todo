@@ -1,10 +1,7 @@
 
 .textAndButton {
   border: 1px solid rgba(0, 0, 0, 0.16);
-  border-radius: 0;
-  border-right: 0px;
-  border-left: 0px;
-  border-top: 0px;
+  border-width: 0 0 1px 0;
   width: 100%;
 }
 button {
@@ -15,7 +12,7 @@ button {
   font-weight: bold;
   font-size: 150%;
   font-family: sans-serif;
-  margin: 0px 0px 0px 10px;
+  margin: 0 0 0 10px;
 }
 .checkAllButton:focus {
   outline: none;
@@ -26,13 +23,8 @@ button {
   appearance: none;
   background-color: transparent;
   background-image: none;
-  border: 1px solid rgba(0, 0, 0, 0.16);
-  border-radius: 0;
+  border-width: 0;
   padding: 7px 0px 0px 0px;
-  border-top: 0px;
-  border-bottom: 0px;
-  border-left: 0px;
-  border-right: 0px;
   font-size: 100%;
   width: 85%;
   margin: 0px 0px 0px 5px;
@@ -41,13 +33,14 @@ button {
   border: 1px solid rgba(0, 0, 0, 0.16);
   box-shadow: none;
   outline: none;
-  border-top: 0px;
-  border-bottom: 0px;
-  border-left: 0px;
-  border-right: 0px;
+  border-width: 0;
   width: 85%;
   margin: 0px 0px 0px 5px;
 }
+
+/* チェックボックスとラジオボタンのカスタマイズに関して、下記のページを参考に作成 */
+/* https://proengineer.internous.co.jp/content/columnfeature/6493 */
+/* https://proengineer.internous.co.jp/content/columnfeature/6492 */
 
 input[type=checkbox] {
   display: none; /* checkboxの標準のスタイルを無効化する */

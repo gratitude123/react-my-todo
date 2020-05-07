@@ -14,33 +14,34 @@
     <script src="build/react-dom.js"></script>
     <script src="babel/browser.js"></script>
     <script type="text/babel">
-      const Excel = React.createClass({
+      const Todos = React.createClass({
+
         getInitialState: function() {
           return {
-            data: initialData,
-            alternative: initialData,
-            uncheckedCount: initialData.length,
-            radio: "all",
-            lastID: ""
+            tasks: initialTasks,
+            alternative: initialTasks,
+            uncheckedCount: initialTasks.length,
+            radio: "all"
           };
         },
+
         componentDidMount: function() {
           window.setInterval(() => {
-            let allWorks = this.state.data;
+            let allWorks = this.state.tasks;
             const uncheckedWorks = allWorks.filter(d => !d.selected);  
-            notifyMe(uncheckedWorks);
-          }, 600000);
+            prepareNotification(uncheckedWorks);
+          }, 20000);
         },
-        // displayName: 'Excel',
+
         render: function() {
           var checks = this.state.alternative.map(function(d) {
-          return (
-            <section>
-              <input type="checkbox" id={d.id} checked={d.selected} onChange={this.__changeSelection.bind(this, d.id)} />
-              <label className="checkLabel" htmlFor={d.id}>{d.workDescription}</label>
-              <button className="destroyRow" onClick={() => {this.__destroyRow(d.id)}}>×</button>
-              <br />
-            </section>
+            return (
+              <section>
+                <input type="checkbox" id={d.id} checked={d.selected} onChange={this.__changeSelection.bind(this, d.id)} />
+                <label className="checkLabel" htmlFor={d.id}>{d.workDescription}</label>
+                <button className="destroyRow" onClick={() => {this.__destroyRow(d.id)}}>×</button>
+                <br />
+              </section>
             );
           }.bind(this));
           return (
@@ -74,7 +75,7 @@
 
         __changeSelection: function(id) {
           let uncheckedCount = 0;
-          let nextRows = this.state.data.map(function(d) {
+          let nextRows = this.state.tasks.map(function(d) {
             if (d.id === id) {
               if(d.selected) {
                 uncheckedCount++;
@@ -89,20 +90,13 @@
               selected: (d.id === id ? !d.selected: d.selected)
             };
           });
-          this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
+          this.setState({tasks: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
         },
 
         __addRow: function(e) {
           if (e.charCode === 13) {
-            const nextRows = this.state.data;
-            const nextNumber = issueLatestID();
-            let nextID = "S";
-            if (nextNumber < 10) {
-              nextID = nextID + "00" + nextNumber;
-            }
-            else if (nextNumber < 100) {
-              nextID = nextID + "0" + nextNumber;
-            }
+            const nextRows = this.state.tasks;
+            const nextID = issueLatestID();
             const additionalRows = {
               id: nextID,
               workDescription: e.target.value,
@@ -111,37 +105,37 @@
             nextRows.push(additionalRows);
             let uncheckedCount = this.state.uncheckedCount;
             uncheckedCount++;
-            this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
+            this.setState({tasks: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
           }
         },
 
         __checkAll: function() {
-          let nextRows = this.state.data.map(function(d) {
+          let nextRows = this.state.tasks.map(function(d) {
             return {
               id: d.id,
               workDescription: d.workDescription,
               selected: true
             };
           });
-          this.setState({data: nextRows, alternative: nextRows,  uncheckedCount: 0});
+          this.setState({tasks: nextRows, alternative: nextRows,  uncheckedCount: 0});
         },
 
         __destroyRow: function(id) {
           const needlessId = id;
-          const nextRows =this.state.data.filter(d => d.id !== needlessId);
+          const nextRows =this.state.tasks.filter(d => d.id !== needlessId);
           let uncheckedCount = this.state.uncheckedCount;
           uncheckedCount--;
-          this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
+          this.setState({tasks: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
         },
 
         __destroyCheckedRow: function() {
-          const nextRows = this.state.data.filter(d => !d.selected);
+          const nextRows = this.state.tasks.filter(d => !d.selected);
           const uncheckedCount = nextRows.length;
-          this.setState({data: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
+          this.setState({tasks: nextRows, alternative: nextRows, uncheckedCount: uncheckedCount});
         },
 
         __selectCheckedRow: function(status) {
-          let currentRows = this.state.data;
+          let currentRows = this.state.tasks;
           let nextRows = currentRows;
           switch (status) {
             case "all":
@@ -160,31 +154,28 @@
 
       });
 
-      
-      
-      const initialData = [
-            {id: "S001", workDescription: "チケットを予約する", selected: false},
-            {id: "S002", workDescription: "掃除をする", selected: false},
-            {id: "S003", workDescription: "アプリを開発する", selected: false}
-          ];
-
       let issueLatestID = function() {
-        let lastID = (initialData[(initialData.length) - 1]).id;
-        let nextNumber = Number(lastID.slice(1));
+        let nextNumber = 0;
         return function() {
           nextNumber++;
           return nextNumber;
         };
       }();
-      
+
+      const initialTasks = [
+            {id: issueLatestID(), workDescription: "チケットを予約する", selected: false},
+            {id: issueLatestID(), workDescription: "掃除をする", selected: false},
+            {id: issueLatestID(), workDescription: "アプリを開発する", selected: false}
+      ];
+
       ReactDOM.render(
-        React.createElement(Excel, {
-          initialData: initialData,
+        React.createElement(Todos, {
+          initialTasks
         }),
         document.getElementById("app")
       );
 
-      function notifyMe(data) {
+      function prepareNotification(uncheckedWorks) {
         if (!("Notification" in window)) {
         alert("このブラウザは通知をサポートしていません");
         }
@@ -198,23 +189,15 @@
             }
           });
         }
-        let works = "";
-        for (var i = 0; i < data.length; i++) {
-          if (i === 0) {
-            works = data[i].workDescription;
-            continue;
-          }
-          works = works + "," + data[i].workDescription;
-        }
-        spawnNotification(works, "em.png", "本日の作業");
+        let works = uncheckedWorks.map(row => row.workDescription).join(",");
+        sendNotification(works, "em.png", "本日の作業");
       }
 
-      function spawnNotification(theBody,theIcon,theTitle) {
-        var options = {
-          body: theBody,
-          icon: theIcon
-        }
-        var n = new Notification(theTitle,options);
+      function sendNotification(body,icon,title) {
+        let options = {
+          body, icon
+        };
+        let n = new Notification(title,options);
         setTimeout(n.close.bind(n), 5000); 
       }
     </script>
